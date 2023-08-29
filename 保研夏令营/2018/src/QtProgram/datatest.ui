@@ -7,16 +7,70 @@
     <x>0</x>
     <y>0</y>
     <width>800</width>
-    <height>600</height>
+    <height>466</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>DataTest</string>
   </property>
-  <widget class="QWidget" name="centralwidget"/>
-  <widget class="QMenuBar" name="menubar"/>
-  <widget class="QStatusBar" name="statusbar"/>
+  <widget class="QWidget" name="centralwidget">
+   <layout class="QVBoxLayout" name="verticalLayout">
+    <item>
+     <layout class="QHBoxLayout" name="horizontalLayout_2">
+      <item>
+       <widget class="QCustomPlot" name="direct_1" native="true"/>
+      </item>
+      <item>
+       <widget class="QCustomPlot" name="direct_2" native="true"/>
+      </item>
+      <item>
+       <widget class="QCustomPlot" name="direct_3" native="true"/>
+      </item>
+      <item>
+       <widget class="QCustomPlot" name="direct_4" native="true"/>
+      </item>
+     </layout>
+    </item>
+    <item>
+     <layout class="QHBoxLayout" name="horizontalLayout_3">
+      <item>
+       <widget class="QCustomPlot" name="symmetry_1" native="true"/>
+      </item>
+      <item>
+       <widget class="QCustomPlot" name="symmetry_2" native="true"/>
+      </item>
+      <item>
+       <widget class="QCustomPlot" name="symmetry_3" native="true"/>
+      </item>
+      <item>
+       <widget class="QCustomPlot" name="symmetry_4" native="true"/>
+      </item>
+     </layout>
+    </item>
+    <item>
+     <widget class="QLabel" name="checkRes">
+      <property name="maximumSize">
+       <size>
+        <width>16777215</width>
+        <height>30</height>
+       </size>
+      </property>
+      <property name="text">
+       <string/>
+      </property>
+     </widget>
+    </item>
+   </layout>
+  </widget>
  </widget>
+ <customwidgets>
+  <customwidget>
+   <class>QCustomPlot</class>
+   <extends>QWidget</extends>
+   <header>qcustomplot.h</header>
+   <container>1</container>
+  </customwidget>
+ </customwidgets>
  <resources/>
  <connections/>
 </ui>

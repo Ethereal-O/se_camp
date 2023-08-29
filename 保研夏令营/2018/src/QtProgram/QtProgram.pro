@@ -1,6 +1,6 @@
 QT       += core gui
 
-greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
+greaterThan(QT_MAJOR_VERSION, 4): QT += widgets printsupport
 
 CONFIG += c++11
 
@@ -18,11 +18,13 @@ DEFINES += QT_DEPRECATED_WARNINGS
 SOURCES += \
     fileselector.cpp \
     main.cpp \
-    datatest.cpp
+    datatest.cpp \
+    qcustomplot.cpp
 
 HEADERS += \
     datatest.h \
-    fileselector.h
+    fileselector.h \
+    qcustomplot.h
 
 FORMS += \
     datatest.ui \

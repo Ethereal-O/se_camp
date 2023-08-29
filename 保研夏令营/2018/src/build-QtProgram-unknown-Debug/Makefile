@@ -14,10 +14,10 @@ EQ            = =
 
 CC            = gcc
 CXX           = g++
-DEFINES       = -DQT_DEPRECATED_WARNINGS -DQT_QML_DEBUG -DQT_WIDGETS_LIB -DQT_GUI_LIB -DQT_CORE_LIB
+DEFINES       = -DQT_DEPRECATED_WARNINGS -DQT_QML_DEBUG -DQT_PRINTSUPPORT_LIB -DQT_WIDGETS_LIB -DQT_GUI_LIB -DQT_CORE_LIB
 CFLAGS        = -pipe -g -Wall -W -D_REENTRANT -fPIC $(DEFINES)
 CXXFLAGS      = -pipe -g -std=gnu++11 -Wall -W -D_REENTRANT -fPIC $(DEFINES)
-INCPATH       = -I../QtProgram -I. -isystem /usr/include/x86_64-linux-gnu/qt5 -isystem /usr/include/x86_64-linux-gnu/qt5/QtWidgets -isystem /usr/include/x86_64-linux-gnu/qt5/QtGui -isystem /usr/include/x86_64-linux-gnu/qt5/QtCore -I. -I. -I/usr/lib/x86_64-linux-gnu/qt5/mkspecs/linux-g++
+INCPATH       = -I../QtProgram -I. -isystem /usr/include/x86_64-linux-gnu/qt5 -isystem /usr/include/x86_64-linux-gnu/qt5/QtPrintSupport -isystem /usr/include/x86_64-linux-gnu/qt5/QtWidgets -isystem /usr/include/x86_64-linux-gnu/qt5/QtGui -isystem /usr/include/x86_64-linux-gnu/qt5/QtCore -I. -I. -I/usr/lib/x86_64-linux-gnu/qt5/mkspecs/linux-g++
 QMAKE         = /usr/lib/qt5/bin/qmake
 DEL_FILE      = rm -f
 CHK_DIR_EXISTS= test -d
@@ -40,7 +40,7 @@ DISTNAME      = QtProgram1.0.0
 DISTDIR = /home/ethereal/Programs/se-camp/sjtu-se-camp/保研夏令营/2018/src/build-QtProgram-unknown-Debug/.tmp/QtProgram1.0.0
 LINK          = g++
 LFLAGS        = 
-LIBS          = $(SUBLIBS) /usr/lib/x86_64-linux-gnu/libQt5Widgets.so /usr/lib/x86_64-linux-gnu/libQt5Gui.so /usr/lib/x86_64-linux-gnu/libQt5Core.so /usr/lib/x86_64-linux-gnu/libGL.so -lpthread   
+LIBS          = $(SUBLIBS) /usr/lib/x86_64-linux-gnu/libQt5PrintSupport.so /usr/lib/x86_64-linux-gnu/libQt5Widgets.so /usr/lib/x86_64-linux-gnu/libQt5Gui.so /usr/lib/x86_64-linux-gnu/libQt5Core.so /usr/lib/x86_64-linux-gnu/libGL.so -lpthread   
 AR            = ar cqs
 RANLIB        = 
 SED           = sed
@@ -54,13 +54,17 @@ OBJECTS_DIR   = ./
 
 SOURCES       = ../QtProgram/fileselector.cpp \
 		../QtProgram/main.cpp \
-		../QtProgram/datatest.cpp moc_datatest.cpp \
-		moc_fileselector.cpp
+		../QtProgram/datatest.cpp \
+		../QtProgram/qcustomplot.cpp moc_datatest.cpp \
+		moc_fileselector.cpp \
+		moc_qcustomplot.cpp
 OBJECTS       = fileselector.o \
 		main.o \
 		datatest.o \
+		qcustomplot.o \
 		moc_datatest.o \
-		moc_fileselector.o
+		moc_fileselector.o \
+		moc_qcustomplot.o
 DIST          = /usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/spec_pre.prf \
 		/usr/lib/x86_64-linux-gnu/qt5/mkspecs/common/unix.conf \
 		/usr/lib/x86_64-linux-gnu/qt5/mkspecs/common/linux.conf \
@@ -118,6 +122,7 @@ DIST          = /usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/spec_pre.prf \
 		/usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/qt_config.prf \
 		/usr/lib/x86_64-linux-gnu/qt5/mkspecs/linux-g++/qmake.conf \
 		/usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/spec_post.prf \
+		../QtProgram/.qmake.stash \
 		/usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/exclusive_builds.prf \
 		/usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/toolchain.prf \
 		/usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/default_pre.prf \
@@ -138,9 +143,11 @@ DIST          = /usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/spec_pre.prf \
 		/usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/yacc.prf \
 		/usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/lex.prf \
 		../QtProgram/QtProgram.pro ../QtProgram/datatest.h \
-		../QtProgram/fileselector.h ../QtProgram/fileselector.cpp \
+		../QtProgram/fileselector.h \
+		../QtProgram/qcustomplot.h ../QtProgram/fileselector.cpp \
 		../QtProgram/main.cpp \
-		../QtProgram/datatest.cpp
+		../QtProgram/datatest.cpp \
+		../QtProgram/qcustomplot.cpp
 QMAKE_TARGET  = QtProgram
 DESTDIR       = 
 TARGET        = QtProgram
@@ -209,6 +216,7 @@ Makefile: ../QtProgram/QtProgram.pro /usr/lib/x86_64-linux-gnu/qt5/mkspecs/linux
 		/usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/qt_config.prf \
 		/usr/lib/x86_64-linux-gnu/qt5/mkspecs/linux-g++/qmake.conf \
 		/usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/spec_post.prf \
+		.qmake.stash \
 		/usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/exclusive_builds.prf \
 		/usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/toolchain.prf \
 		/usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/default_pre.prf \
@@ -287,6 +295,7 @@ Makefile: ../QtProgram/QtProgram.pro /usr/lib/x86_64-linux-gnu/qt5/mkspecs/linux
 /usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/qt_config.prf:
 /usr/lib/x86_64-linux-gnu/qt5/mkspecs/linux-g++/qmake.conf:
 /usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/spec_post.prf:
+.qmake.stash:
 /usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/exclusive_builds.prf:
 /usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/toolchain.prf:
 /usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/default_pre.prf:
@@ -322,8 +331,8 @@ distdir: FORCE
 	@test -d $(DISTDIR) || mkdir -p $(DISTDIR)
 	$(COPY_FILE) --parents $(DIST) $(DISTDIR)/
 	$(COPY_FILE) --parents /usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/data/dummy.cpp $(DISTDIR)/
-	$(COPY_FILE) --parents ../QtProgram/datatest.h ../QtProgram/fileselector.h $(DISTDIR)/
-	$(COPY_FILE) --parents ../QtProgram/fileselector.cpp ../QtProgram/main.cpp ../QtProgram/datatest.cpp $(DISTDIR)/
+	$(COPY_FILE) --parents ../QtProgram/datatest.h ../QtProgram/fileselector.h ../QtProgram/qcustomplot.h $(DISTDIR)/
+	$(COPY_FILE) --parents ../QtProgram/fileselector.cpp ../QtProgram/main.cpp ../QtProgram/datatest.cpp ../QtProgram/qcustomplot.cpp $(DISTDIR)/
 	$(COPY_FILE) --parents ../QtProgram/datatest.ui ../QtProgram/fileselector.ui $(DISTDIR)/
 	$(COPY_FILE) --parents QtProgram_zh_CN.ts $(DISTDIR)/
 
@@ -357,18 +366,23 @@ compiler_moc_predefs_clean:
 moc_predefs.h: /usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/data/dummy.cpp
 	g++ -pipe -g -std=gnu++11 -Wall -W -dM -E -o moc_predefs.h /usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/data/dummy.cpp
 
-compiler_moc_header_make_all: moc_datatest.cpp moc_fileselector.cpp
+compiler_moc_header_make_all: moc_datatest.cpp moc_fileselector.cpp moc_qcustomplot.cpp
 compiler_moc_header_clean:
-	-$(DEL_FILE) moc_datatest.cpp moc_fileselector.cpp
+	-$(DEL_FILE) moc_datatest.cpp moc_fileselector.cpp moc_qcustomplot.cpp
 moc_datatest.cpp: ../QtProgram/datatest.h \
 		moc_predefs.h \
 		/usr/lib/qt5/bin/moc
-	/usr/lib/qt5/bin/moc $(DEFINES) --include /home/ethereal/Programs/se-camp/sjtu-se-camp/保研夏令营/2018/src/build-QtProgram-unknown-Debug/moc_predefs.h -I/usr/lib/x86_64-linux-gnu/qt5/mkspecs/linux-g++ -I/home/ethereal/Programs/se-camp/sjtu-se-camp/保研夏令营/2018/src/QtProgram -I/usr/include/x86_64-linux-gnu/qt5 -I/usr/include/x86_64-linux-gnu/qt5/QtWidgets -I/usr/include/x86_64-linux-gnu/qt5/QtGui -I/usr/include/x86_64-linux-gnu/qt5/QtCore -I. -I/usr/include/c++/9 -I/usr/include/x86_64-linux-gnu/c++/9 -I/usr/include/c++/9/backward -I/usr/lib/gcc/x86_64-linux-gnu/9/include -I/usr/local/include -I/usr/include/x86_64-linux-gnu -I/usr/include ../QtProgram/datatest.h -o moc_datatest.cpp
+	/usr/lib/qt5/bin/moc $(DEFINES) --include /home/ethereal/Programs/se-camp/sjtu-se-camp/保研夏令营/2018/src/build-QtProgram-unknown-Debug/moc_predefs.h -I/usr/lib/x86_64-linux-gnu/qt5/mkspecs/linux-g++ -I/home/ethereal/Programs/se-camp/sjtu-se-camp/保研夏令营/2018/src/QtProgram -I/usr/include/x86_64-linux-gnu/qt5 -I/usr/include/x86_64-linux-gnu/qt5/QtPrintSupport -I/usr/include/x86_64-linux-gnu/qt5/QtWidgets -I/usr/include/x86_64-linux-gnu/qt5/QtGui -I/usr/include/x86_64-linux-gnu/qt5/QtCore -I. -I/usr/include/c++/9 -I/usr/include/x86_64-linux-gnu/c++/9 -I/usr/include/c++/9/backward -I/usr/lib/gcc/x86_64-linux-gnu/9/include -I/usr/local/include -I/usr/include/x86_64-linux-gnu -I/usr/include ../QtProgram/datatest.h -o moc_datatest.cpp
 
 moc_fileselector.cpp: ../QtProgram/fileselector.h \
 		moc_predefs.h \
 		/usr/lib/qt5/bin/moc
-	/usr/lib/qt5/bin/moc $(DEFINES) --include /home/ethereal/Programs/se-camp/sjtu-se-camp/保研夏令营/2018/src/build-QtProgram-unknown-Debug/moc_predefs.h -I/usr/lib/x86_64-linux-gnu/qt5/mkspecs/linux-g++ -I/home/ethereal/Programs/se-camp/sjtu-se-camp/保研夏令营/2018/src/QtProgram -I/usr/include/x86_64-linux-gnu/qt5 -I/usr/include/x86_64-linux-gnu/qt5/QtWidgets -I/usr/include/x86_64-linux-gnu/qt5/QtGui -I/usr/include/x86_64-linux-gnu/qt5/QtCore -I. -I/usr/include/c++/9 -I/usr/include/x86_64-linux-gnu/c++/9 -I/usr/include/c++/9/backward -I/usr/lib/gcc/x86_64-linux-gnu/9/include -I/usr/local/include -I/usr/include/x86_64-linux-gnu -I/usr/include ../QtProgram/fileselector.h -o moc_fileselector.cpp
+	/usr/lib/qt5/bin/moc $(DEFINES) --include /home/ethereal/Programs/se-camp/sjtu-se-camp/保研夏令营/2018/src/build-QtProgram-unknown-Debug/moc_predefs.h -I/usr/lib/x86_64-linux-gnu/qt5/mkspecs/linux-g++ -I/home/ethereal/Programs/se-camp/sjtu-se-camp/保研夏令营/2018/src/QtProgram -I/usr/include/x86_64-linux-gnu/qt5 -I/usr/include/x86_64-linux-gnu/qt5/QtPrintSupport -I/usr/include/x86_64-linux-gnu/qt5/QtWidgets -I/usr/include/x86_64-linux-gnu/qt5/QtGui -I/usr/include/x86_64-linux-gnu/qt5/QtCore -I. -I/usr/include/c++/9 -I/usr/include/x86_64-linux-gnu/c++/9 -I/usr/include/c++/9/backward -I/usr/lib/gcc/x86_64-linux-gnu/9/include -I/usr/local/include -I/usr/include/x86_64-linux-gnu -I/usr/include ../QtProgram/fileselector.h -o moc_fileselector.cpp
+
+moc_qcustomplot.cpp: ../QtProgram/qcustomplot.h \
+		moc_predefs.h \
+		/usr/lib/qt5/bin/moc
+	/usr/lib/qt5/bin/moc $(DEFINES) --include /home/ethereal/Programs/se-camp/sjtu-se-camp/保研夏令营/2018/src/build-QtProgram-unknown-Debug/moc_predefs.h -I/usr/lib/x86_64-linux-gnu/qt5/mkspecs/linux-g++ -I/home/ethereal/Programs/se-camp/sjtu-se-camp/保研夏令营/2018/src/QtProgram -I/usr/include/x86_64-linux-gnu/qt5 -I/usr/include/x86_64-linux-gnu/qt5/QtPrintSupport -I/usr/include/x86_64-linux-gnu/qt5/QtWidgets -I/usr/include/x86_64-linux-gnu/qt5/QtGui -I/usr/include/x86_64-linux-gnu/qt5/QtCore -I. -I/usr/include/c++/9 -I/usr/include/x86_64-linux-gnu/c++/9 -I/usr/include/c++/9/backward -I/usr/lib/gcc/x86_64-linux-gnu/9/include -I/usr/local/include -I/usr/include/x86_64-linux-gnu -I/usr/include ../QtProgram/qcustomplot.h -o moc_qcustomplot.cpp
 
 compiler_moc_objc_header_make_all:
 compiler_moc_objc_header_clean:
@@ -378,7 +392,8 @@ compiler_uic_make_all: ui_datatest.h ui_fileselector.h
 compiler_uic_clean:
 	-$(DEL_FILE) ui_datatest.h ui_fileselector.h
 ui_datatest.h: ../QtProgram/datatest.ui \
-		/usr/lib/qt5/bin/uic
+		/usr/lib/qt5/bin/uic \
+		../QtProgram/qcustomplot.h
 	/usr/lib/qt5/bin/uic ../QtProgram/datatest.ui -o ui_datatest.h
 
 ui_fileselector.h: ../QtProgram/fileselector.ui \
@@ -396,21 +411,29 @@ compiler_clean: compiler_moc_predefs_clean compiler_moc_header_clean compiler_ui
 ####### Compile
 
 fileselector.o: ../QtProgram/fileselector.cpp ../QtProgram/fileselector.h \
-		ui_fileselector.h
+		ui_fileselector.h \
+		../QtProgram/datatest.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o fileselector.o ../QtProgram/fileselector.cpp
 
 main.o: ../QtProgram/main.cpp ../QtProgram/fileselector.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o main.o ../QtProgram/main.cpp
 
 datatest.o: ../QtProgram/datatest.cpp ../QtProgram/datatest.h \
-		ui_datatest.h
+		ui_datatest.h \
+		../QtProgram/qcustomplot.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o datatest.o ../QtProgram/datatest.cpp
+
+qcustomplot.o: ../QtProgram/qcustomplot.cpp ../QtProgram/qcustomplot.h
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o qcustomplot.o ../QtProgram/qcustomplot.cpp
 
 moc_datatest.o: moc_datatest.cpp 
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o moc_datatest.o moc_datatest.cpp
 
 moc_fileselector.o: moc_fileselector.cpp 
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o moc_fileselector.o moc_fileselector.cpp
+
+moc_qcustomplot.o: moc_qcustomplot.cpp 
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o moc_qcustomplot.o moc_qcustomplot.cpp
 
 ####### Install
 
