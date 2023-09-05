@@ -4,7 +4,10 @@
 #include <QMainWindow>
 
 QT_BEGIN_NAMESPACE
-namespace Ui { class HashWindow; }
+namespace Ui
+{
+    class HashWindow;
+}
 QT_END_NAMESPACE
 
 class HashWindow : public QMainWindow
