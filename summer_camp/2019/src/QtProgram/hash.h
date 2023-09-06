@@ -19,7 +19,8 @@ public:
     int32_t hash(int order, K key, int capacity);
 };
 
-enum class HASHTYPE{
+enum class HASHTYPE
+{
     LINEARHASH,
     CUCKOOHASH,
     OTHER
@@ -35,10 +36,10 @@ protected:
 public:
     Hash_T(){};
     virtual ~Hash_T(){};
-    HASHTYPE GetType(){return type;}
-    virtual size_t Size()=0;
-    virtual size_t Capacity()=0;
-    virtual std::vector<std::vector<std::optional<std::pair<K, V>>>> GetHashTable()=0;
+    HASHTYPE GetType() { return type; }
+    virtual size_t Size() = 0;
+    virtual size_t Capacity() = 0;
+    virtual std::vector<std::vector<std::optional<std::pair<K, V>>>> GetHashTable() = 0;
     virtual std::optional<std::pair<K, V>> Get(K key) = 0;
     virtual bool Set(const K &key, const V &value) = 0;
     virtual bool Delete(const K &key) = 0;
