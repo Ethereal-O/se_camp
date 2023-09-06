@@ -1,5 +1,4 @@
 #include "hash.h"
-#include "qdebug.h"
 
 template <typename K>
 int32_t CaculateHashNormal_T<K>::hash(int order, K key, int capacity)
@@ -19,7 +18,9 @@ int32_t CaculateHashNormal_T<int32_t>::hash(int order, int32_t key, int capacity
 template <typename K, typename V>
 LinearHash_T<K, V>::LinearHash_T(std::unique_ptr<CaculateHash<K>> &&caculateHash) : caculateHash(std::move(caculateHash)), realNum(0)
 {
+    this->type = HASHTYPE::LINEARHASH;
     hashTable = std::make_unique<std::vector<std::optional<std::pair<K, V>>>>(INIT_CAPACITY);
+    deleteTable = std::make_unique<std::vector<int8_t>>(INIT_CAPACITY);
 }
 
 template <typename K, typename V>
@@ -32,12 +33,43 @@ bool LinearHash_T<K, V>::ReHash()
     std::unique_ptr<std::vector<std::optional<std::pair<K, V>>>> oldHashTable = std::move(hashTable);
     hashTable = std::move(newHashTable);
 
+    std::unique_ptr<std::vector<int8_t>> newDeleteTable = std::make_unique<std::vector<int8_t>>(deleteTable->size()*2);
+    std::unique_ptr<std::vector<int8_t>> oldDeleteTable = std::move(deleteTable);
+    deleteTable = std::move(newDeleteTable);
+
     realNum = 0;
-    for (auto &&v : *oldHashTable)
-        if (v.has_value())
-            Set(v.value().first, v.value().second);
+    for (int32_t i=0;i<static_cast<int32_t>(oldHashTable->size());i++)
+        if (oldHashTable->at(i).has_value()&&oldDeleteTable->at(i)==0)
+            Set(oldHashTable->at(i).value().first, oldHashTable->at(i).value().second);
 
     return true;
+}
+
+template <typename K, typename V>
+size_t LinearHash_T<K, V>::Size()
+{
+    return realNum;
+}
+
+template <typename K, typename V>
+size_t LinearHash_T<K, V>::Capacity()
+{
+    return hashTable->size();
+}
+
+template <typename K, typename V>
+std::vector<std::vector<std::optional<std::pair<K, V>>>> LinearHash_T<K, V>::GetHashTable()
+{
+    std::vector<std::vector<std::optional<std::pair<K, V>>>> hashTables;
+    std::vector<std::optional<std::pair<K, V>>> realHashTable;
+    for (int32_t i=0;i<static_cast<int32_t>(hashTable->size());i++)
+        if (hashTable->at(i).has_value()&&deleteTable->at(i)==0)
+            realHashTable.push_back(hashTable->at(i));
+        else
+            realHashTable.push_back(std::nullopt);
+
+    hashTables.push_back(*hashTable);
+    return hashTables;
 }
 
 template <typename K, typename V>
@@ -49,16 +81,28 @@ std::optional<std::pair<K, V>> LinearHash_T<K, V>::Get(K key)
 
     // now value is it
     if (hashTable->at(realKey).value().first == key)
-        return hashTable->at(realKey).value();
+    {
+        if (deleteTable->at(realKey)==0)
+            return hashTable->at(realKey).value();
+        else
+            return std::nullopt;
+    }
 
     // not is it, go head until find a location
     int32_t nowRealKey = (realKey + 1) % hashTable->size();
     while (nowRealKey != realKey && hashTable->at(nowRealKey).has_value())
     {
         if (hashTable->at(nowRealKey).value().first == key)
-            return hashTable->at(nowRealKey).value();
+        {
+            if (deleteTable->at(nowRealKey)==0)
+                return hashTable->at(nowRealKey).value();
+            else
+                return std::nullopt;
+        }
         else
+        {
             nowRealKey = (nowRealKey + 1) % hashTable->size();
+        }
     }
 
     return std::nullopt;
@@ -72,10 +116,11 @@ bool LinearHash_T<K, V>::Set(const K &key, const V &value)
         return false;
 
     // don't have value, directly set
-    if (!hashTable->at(realKey).has_value())
+    if ((!hashTable->at(realKey).has_value())||(hashTable->at(realKey).has_value() && hashTable->at(realKey).value().first == key)||(hashTable->at(realKey).has_value()&&deleteTable->at(realKey)!=0))
     {
         hashTable->at(realKey) = std::make_pair(key, value);
         realNum++;
+        deleteTable->at(realKey)=0;
         return ReHash();
     }
 
@@ -83,10 +128,11 @@ bool LinearHash_T<K, V>::Set(const K &key, const V &value)
     int32_t nowRealKey = (realKey + 1) % hashTable->size();
     while (nowRealKey != realKey)
     {
-        if (!hashTable->at(nowRealKey).has_value() || (hashTable->at(nowRealKey).has_value() && hashTable->at(nowRealKey).value().first == key))
+        if (!hashTable->at(nowRealKey).has_value() || (hashTable->at(nowRealKey).has_value() && hashTable->at(nowRealKey).value().first == key)||(hashTable->at(nowRealKey).has_value()&&deleteTable->at(nowRealKey)!=0))
         {
             hashTable->at(nowRealKey) = std::make_pair(key, value);
             realNum++;
+            deleteTable->at(nowRealKey) = 0;
             return ReHash();
         }
         else
@@ -107,7 +153,7 @@ bool LinearHash_T<K, V>::Delete(const K &key)
     // now value is it
     if (hashTable->at(realKey).value().first == key)
     {
-        hashTable->at(realKey) = std::nullopt;
+        deleteTable->at(realKey) = 1;
         realNum--;
         return true;
     }
@@ -118,7 +164,7 @@ bool LinearHash_T<K, V>::Delete(const K &key)
     {
         if (hashTable->at(nowRealKey).value().first == key)
         {
-            hashTable->at(nowRealKey) = std::nullopt;
+            deleteTable->at(nowRealKey) = 1;
             realNum--;
             return true;
         }
@@ -133,6 +179,7 @@ bool LinearHash_T<K, V>::Delete(const K &key)
 template <typename K, typename V>
 CuckooHash_T<K, V>::CuckooHash_T(std::unique_ptr<CaculateHash<K>> &&caculateHash) : caculateHash(std::move(caculateHash)), realNum_1(0), realNum_2(0)
 {
+    this->type = HASHTYPE::CUCKOOHASH;
     hashTable_1 = std::make_unique<std::vector<std::optional<std::pair<K, V>>>>(INIT_CAPACITY);
     hashTable_2 = std::make_unique<std::vector<std::optional<std::pair<K, V>>>>(INIT_CAPACITY);
 }
@@ -206,6 +253,34 @@ bool CuckooHash_T<K, V>::Kick(std::vector<std::pair<int32_t, int32_t>> &kickOldP
 }
 
 template <typename K, typename V>
+size_t CuckooHash_T<K, V>::Size()
+{
+    return realNum_1+realNum_2;
+}
+
+template <typename K, typename V>
+size_t CuckooHash_T<K, V>::Capacity()
+{
+    return hashTable_1->size()+hashTable_2->size();
+}
+
+template <typename K, typename V>
+std::vector<std::vector<std::optional<std::pair<K, V>>>> CuckooHash_T<K, V>::GetHashTable()
+{
+//    return std::make_tuple(*hashTable_1, *hashTable_2);
+    std::vector<std::vector<std::optional<std::pair<K, V>>>> hashTables;
+    hashTables.push_back(*hashTable_1);
+    hashTables.push_back(*hashTable_2);
+    return hashTables;
+}
+
+template <typename K, typename V>
+std::vector<std::pair<int32_t, int32_t>> CuckooHash_T<K, V>::GetKickPath()
+{
+    return kickPath;
+}
+
+template <typename K, typename V>
 std::optional<std::pair<K, V>> CuckooHash_T<K, V>::Get(K key)
 {
     int32_t realKey_1 = caculateHash->hash(0, key, hashTable_1->size());
@@ -232,7 +307,7 @@ bool CuckooHash_T<K, V>::Set(const K &key, const V &value)
     }
 
     // need kick
-    std::vector<std::pair<int32_t, int32_t>> kickPath;
+    kickPath.clear();
     while (!Kick(kickPath, 0, realKey_1))
     {
         kickPath.clear();

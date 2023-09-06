@@ -17,8 +17,13 @@ class HashWindow : public QMainWindow
 public:
     HashWindow(QWidget *parent = nullptr);
     ~HashWindow();
+    void selectFile();
+    void inputFile();
+    void confirm();
+    QString proceed(QVector<QString>& options);
 
 private:
     Ui::HashWindow *ui;
+    QString filePath;
 };
 #endif // HASHWINDOW_H

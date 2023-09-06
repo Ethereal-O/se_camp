@@ -11,9 +11,11 @@
 
 #include <QtCore/QVariant>
 #include <QtWidgets/QApplication>
+#include <QtWidgets/QLineEdit>
 #include <QtWidgets/QMainWindow>
-#include <QtWidgets/QMenuBar>
-#include <QtWidgets/QStatusBar>
+#include <QtWidgets/QPushButton>
+#include <QtWidgets/QSpacerItem>
+#include <QtWidgets/QVBoxLayout>
 #include <QtWidgets/QWidget>
 
 QT_BEGIN_NAMESPACE
@@ -22,8 +24,12 @@ class Ui_HashWindow
 {
 public:
     QWidget *centralwidget;
-    QMenuBar *menubar;
-    QStatusBar *statusbar;
+    QVBoxLayout *verticalLayout;
+    QSpacerItem *verticalSpacer;
+    QPushButton *selectBtn;
+    QLineEdit *fileInput;
+    QPushButton *confirmBtn;
+    QSpacerItem *verticalSpacer_2;
 
     void setupUi(QMainWindow *HashWindow)
     {
@@ -32,13 +38,32 @@ public:
         HashWindow->resize(800, 600);
         centralwidget = new QWidget(HashWindow);
         centralwidget->setObjectName(QString::fromUtf8("centralwidget"));
+        verticalLayout = new QVBoxLayout(centralwidget);
+        verticalLayout->setObjectName(QString::fromUtf8("verticalLayout"));
+        verticalSpacer = new QSpacerItem(20, 243, QSizePolicy::Minimum, QSizePolicy::Expanding);
+
+        verticalLayout->addItem(verticalSpacer);
+
+        selectBtn = new QPushButton(centralwidget);
+        selectBtn->setObjectName(QString::fromUtf8("selectBtn"));
+
+        verticalLayout->addWidget(selectBtn);
+
+        fileInput = new QLineEdit(centralwidget);
+        fileInput->setObjectName(QString::fromUtf8("fileInput"));
+
+        verticalLayout->addWidget(fileInput);
+
+        confirmBtn = new QPushButton(centralwidget);
+        confirmBtn->setObjectName(QString::fromUtf8("confirmBtn"));
+
+        verticalLayout->addWidget(confirmBtn);
+
+        verticalSpacer_2 = new QSpacerItem(20, 243, QSizePolicy::Minimum, QSizePolicy::Expanding);
+
+        verticalLayout->addItem(verticalSpacer_2);
+
         HashWindow->setCentralWidget(centralwidget);
-        menubar = new QMenuBar(HashWindow);
-        menubar->setObjectName(QString::fromUtf8("menubar"));
-        HashWindow->setMenuBar(menubar);
-        statusbar = new QStatusBar(HashWindow);
-        statusbar->setObjectName(QString::fromUtf8("statusbar"));
-        HashWindow->setStatusBar(statusbar);
 
         retranslateUi(HashWindow);
 
@@ -48,6 +73,10 @@ public:
     void retranslateUi(QMainWindow *HashWindow)
     {
         HashWindow->setWindowTitle(QCoreApplication::translate("HashWindow", "HashWindow", nullptr));
+        selectBtn->setText(QCoreApplication::translate("HashWindow", "\351\200\211\346\213\251", nullptr));
+        fileInput->setInputMask(QString());
+        fileInput->setText(QString());
+        confirmBtn->setText(QCoreApplication::translate("HashWindow", "\347\241\256\350\256\244", nullptr));
     } // retranslateUi
 
 };
