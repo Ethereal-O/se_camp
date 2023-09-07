@@ -96,9 +96,4 @@ template class LinearHash_T<int32_t, int32_t>;
 template class CuckooHash_T<int32_t, int32_t>;
 template class CaculateHashNormal_T<int32_t>;
 
-using Hash = Hash_T<int32_t, int32_t>;
-using LinearHash = LinearHash_T<int32_t, int32_t>;
-using CuckooHash = CuckooHash_T<int32_t, int32_t>;
-using CaculateHashNormal = CaculateHashNormal_T<int32_t>;
-
 #endif // HASH_H

@@ -1,16 +1,41 @@
 #include "hashwindow.h"
 #include "ui_hashwindow.h"
-#include "hash.h"
-#include <QFileDialog>
 #include <QDebug>
 
 HashWindow::HashWindow(QWidget *parent)
     : QMainWindow(parent), ui(new Ui::HashWindow)
 {
     ui->setupUi(this);
-    connect(ui->selectBtn, &QPushButton::clicked, this, &HashWindow::selectFile);
-    connect(ui->fileInput, &QLineEdit::textChanged, this, &HashWindow::inputFile);
-    connect(ui->confirmBtn, &QPushButton::clicked, this, &HashWindow::confirm);
+    connect(ui->keyEdit, &QLineEdit::textChanged, this, &HashWindow::setKey);
+    connect(ui->valueEdit, &QLineEdit::textChanged, this, &HashWindow::setValue);
+    connect(ui->insertButton, &QPushButton::clicked, this, &HashWindow::insertItem);
+    connect(ui->deleteButton, &QPushButton::clicked, this, &HashWindow::deleteItem);
+
+    QHBoxLayout *leftLayout = new QHBoxLayout();
+    leftLayout->setDirection(QBoxLayout::TopToBottom); // verticalLayout
+    leftLayout->setAlignment(Qt::AlignCenter);
+    QHBoxLayout *rightLayout = new QHBoxLayout();
+    rightLayout->setDirection(QBoxLayout::TopToBottom); // verticalLayout
+    rightLayout->setAlignment(Qt::AlignCenter);
+    for (int32_t i = 0; i < HASHSIZE; i++)
+    {
+        leftVector.push_back(new QLabel());
+        leftVector[i]->setFixedSize(50, 50);
+        leftVector[i]->setFrameShape(QFrame::Box);
+        leftVector[i]->setText("nil");
+        leftVector[i]->setAlignment(Qt::AlignCenter);
+        leftLayout->addWidget(leftVector[i]);
+        rightVector.push_back(new QLabel());
+        rightVector[i]->setFixedSize(50, 50);
+        rightVector[i]->setFrameShape(QFrame::Box);
+        rightVector[i]->setText("nil");
+        rightVector[i]->setAlignment(Qt::AlignCenter);
+        rightLayout->addWidget(rightVector[i]);
+    }
+    ui->hashTableWidget_1->setLayout(leftLayout);
+    ui->hashTableWidget_2->setLayout(rightLayout);
+
+    hash = new CuckooHash(std::make_unique<CaculateHashNormal>());
 }
 
 HashWindow::~HashWindow()
@@ -18,77 +43,73 @@ HashWindow::~HashWindow()
     delete ui;
 }
 
-void HashWindow::selectFile()
+void HashWindow::DrawLineWithArrow(QPainter &painter, QPen pen, QPoint start, QPoint end)
 {
-    QFileDialog f(this);
-    f.setWindowTitle("选择文件");
-    f.setViewMode(QFileDialog::Detail);
+    painter.setRenderHint(QPainter::Antialiasing, true);
 
-    if (f.exec() == QDialog::Accepted)
-        filePath = f.selectedFiles()[0];
+    qreal arrowSize = 20;
+    painter.setPen(pen);
+    painter.setBrush(pen.color());
 
-    ui->fileInput->setText(filePath);
+    QLineF line(end, start);
+
+    double angle = std::atan2(-line.dy(), line.dx());
+    QPointF arrowP1 = line.p1() + QPointF(sin(angle + M_PI / 3) * arrowSize,
+                                          cos(angle + M_PI / 3) * arrowSize);
+    QPointF arrowP2 = line.p1() + QPointF(sin(angle + M_PI - M_PI / 3) * arrowSize,
+                                          cos(angle + M_PI - M_PI / 3) * arrowSize);
+
+    QPolygonF arrowHead;
+    arrowHead.clear();
+    arrowHead << line.p1() << arrowP1 << arrowP2;
+    painter.drawLine(line);
+    painter.drawPolygon(arrowHead);
 }
 
-void HashWindow::inputFile()
+void HashWindow::paintEvent(QPaintEvent *newPaintEvent)
 {
-    filePath = ui->fileInput->text();
+    (void)newPaintEvent;
+    QPainter painter(this);
+    QPen pen = QPen();
+    for (int i = 0; i < static_cast<int>(kickPath.size() - 1); i++)
+        if (kickPath[i].first == 0 && kickPath[i].second >= 0 && kickPath[i].second < HASHSIZE && kickPath[i + 1].second >= 0 && kickPath[i + 1].second < HASHSIZE)
+            DrawLineWithArrow(painter, pen, QPoint(ui->hashTableWidget_1->x() + leftVector[0]->x() + leftVector[0]->width(), ui->hashTableWidget_1->y() + leftVector[kickPath[i].second]->y() + leftVector[0]->height() / 2), QPoint(ui->hashTableWidget_2->x() + rightVector[0]->x(), ui->hashTableWidget_2->y() + rightVector[kickPath[i + 1].second]->y() + rightVector[0]->height() / 2));
+        else if (kickPath[i].first == 1 && kickPath[i].second >= 0 && kickPath[i].second < HASHSIZE && kickPath[i + 1].second >= 0 && kickPath[i + 1].second < HASHSIZE)
+            DrawLineWithArrow(painter, pen, QPoint(ui->hashTableWidget_2->x() + rightVector[0]->x(), ui->hashTableWidget_2->y() + rightVector[kickPath[i].second]->y() + rightVector[0]->height() / 2), QPoint(ui->hashTableWidget_1->x() + leftVector[0]->x() + leftVector[0]->width(), ui->hashTableWidget_1->y() + leftVector[kickPath[i + 1].second]->y() + leftVector[0]->height() / 2));
 }
 
-void HashWindow::confirm()
+void HashWindow::updateShow()
 {
-    QFile file(filePath);
-    if (!file.open(QIODevice::ReadOnly | QIODevice::Text))
-        return;
-    QTextStream readStream(&file);
-    QVector<QString> v;
-    while (!readStream.atEnd())
-    {
-        QString line = readStream.readLine();
-        v.push_back(line);
-    }
-    QString content = proceed(v);
-    QFile file_2("ans.txt");
-    if (!file_2.open(QIODevice::WriteOnly | QIODevice::Text))
-        return;
-    file_2.write(content.toUtf8().data());
+    auto originHashTable = hash->GetHashTable();
+    for (int i = 0; i < HASHSIZE; i++)
+        leftVector[i]->setText(originHashTable[0][i].has_value() ? QString::number(originHashTable[0][i].value().second) : "nil");
+    if (originHashTable.size() > 1)
+        for (int i = 0; i < HASHSIZE; i++)
+            rightVector[i]->setText(originHashTable[1][i].has_value() ? QString::number(originHashTable[1][i].value().second) : "nil");
 }
 
-QString HashWindow::proceed(QVector<QString> &options)
+void HashWindow::setKey()
 {
-    QString res;
+    key = ui->keyEdit->text().toInt();
+}
 
-    //    Hash *aa = new CuckooHash(std::make_unique<CaculateHashNormal>());
-    Hash *aa = new LinearHash(std::make_unique<CaculateHashNormal>());
+void HashWindow::setValue()
+{
+    value = ui->valueEdit->text().toInt();
+}
 
-    if (aa->GetType() == HASHTYPE::CUCKOOHASH)
-        qDebug() << "CUCKOOHASH";
-    else if (aa->GetType() == HASHTYPE::LINEARHASH)
-        qDebug() << "LINEARHASH";
+void HashWindow::insertItem()
+{
+    hash->Set(key, value);
+    kickPath = hash->GetKickPath();
+    updateShow();
+    update();
+}
 
-    std::string option;
-    int32_t k;
-    int32_t v;
-    for (auto &&a : options)
-    {
-        auto m = std::stringstream(a.toUtf8().data());
-        m >> option >> k >> v;
-        if (option.compare("Set") == 0)
-        {
-            aa->Set(k, v);
-        }
-        if (option.compare("Get") == 0)
-        {
-            auto pair = aa->Get(k);
-            if (pair.has_value())
-                res += QString::number(pair.value().second) + "\n";
-            else
-                res += "null\n";
-        }
-        if (option.compare("Del") == 0)
-        {
-            aa->Delete(k);
-        }
-    }
-    return res;
+void HashWindow::deleteItem()
+{
+    hash->Delete(key);
+    kickPath.clear();
+    updateShow();
+    update();
 }

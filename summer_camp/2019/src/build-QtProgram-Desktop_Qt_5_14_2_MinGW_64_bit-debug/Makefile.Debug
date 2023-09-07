@@ -476,8 +476,13 @@ debug/hashwindow.o: ../QtProgram/hashwindow.cpp ../QtProgram/hashwindow.h \
 		D:/Learning_And_Life/Qt/Qt5.14.2/5.14.2/mingw73_64/include/QtWidgets/qtabwidget.h \
 		D:/Learning_And_Life/Qt/Qt5.14.2/5.14.2/mingw73_64/include/QtGui/qicon.h \
 		ui_hashwindow.h \
-		D:/Learning_And_Life/Qt/Qt5.14.2/5.14.2/mingw73_64/include/QtCore/QDebug \
-		../QtProgram/hash.h
+		../QtProgram/hash.h \
+		D:/Learning_And_Life/Qt/Qt5.14.2/5.14.2/mingw73_64/include/QtWidgets/QFileDialog \
+		D:/Learning_And_Life/Qt/Qt5.14.2/5.14.2/mingw73_64/include/QtWidgets/qfiledialog.h \
+		D:/Learning_And_Life/Qt/Qt5.14.2/5.14.2/mingw73_64/include/QtCore/qdir.h \
+		D:/Learning_And_Life/Qt/Qt5.14.2/5.14.2/mingw73_64/include/QtCore/qfileinfo.h \
+		D:/Learning_And_Life/Qt/Qt5.14.2/5.14.2/mingw73_64/include/QtWidgets/qdialog.h \
+		D:/Learning_And_Life/Qt/Qt5.14.2/5.14.2/mingw73_64/include/QtCore/QDebug
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o debug\hashwindow.o ..\QtProgram\hashwindow.cpp
 
 debug/moc_hashwindow.o: debug/moc_hashwindow.cpp 
