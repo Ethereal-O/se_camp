@@ -186,6 +186,8 @@ namespace DNA
             std::map<std::string, std::vector<std::string>> borderMap;
             std::map<std::string, std::vector<std::string>> outlierMap;
             caculteMap(dna_set, (l + r) / 2, minpts, coreMap, borderMap, outlierMap);
+            if (l + 1 == r)
+                break;
             if (outlierMap.size() == 0)
                 r = (l + r) / 2;
             else
