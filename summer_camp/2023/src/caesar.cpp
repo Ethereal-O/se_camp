@@ -27,13 +27,7 @@ std::string readFile(const std::string &path)
     std::ifstream file(path.data(), std::ios::in);
     if (!file.is_open())
         return "";
-
-    std::string content;
-    file.seekg(0, std::ios::end);
-    content.resize(file.tellg());
-    file.seekg(0, std::ios::beg);
-    file.read(&content[0], content.size());
-    file.close();
+    std::string content((std::istreambuf_iterator<char>(file)), std::istreambuf_iterator<char>());
     return content;
 }
 
