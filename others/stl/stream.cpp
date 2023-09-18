@@ -67,6 +67,14 @@ std::vector<std::string> split2(const std::string &s, const std::string &delim)
     return res;
 }
 
+std::string getFirstLine(const std::string &s)
+{
+    std::istringstream iss(s);
+    std::string line;
+    std::getline(iss, line);
+    return line;
+}
+
 std::string intToString(int num)
 {
     std::stringstream ss;
