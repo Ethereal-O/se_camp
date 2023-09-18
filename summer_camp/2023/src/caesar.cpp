@@ -122,11 +122,38 @@ void BuildTrie()
     std::cout << leafNum << std::endl;
 }
 
+int FindCode(TrieNode *node, const std::string &str, int diff)
+{
+    if (str.length() <= 0)
+    {
+        if (node->isWord)
+            return diff;
+        return -1;
+    }
+
+    if (diff == -1)
+    {
+        for (auto &&c : node->children)
+        {
+            int res = FindCode(c.second, str.substr(1), (str[0] + 26 - c.first) % 26);
+            if (res != -1)
+                return res;
+        }
+    }
+    else
+    {
+        if (node->children.find((26 + str[0] - 'a' - diff) % 26 + 'a') == node->children.end())
+            return -1;
+        return FindCode(node->children[(26 + str[0] - 'a' - diff) % 26 + 'a'], str.substr(1), diff);
+    }
+    return -1;
+}
+
 void CrackCodeInc()
 {
     for (int i = 0; i < codeVector.size() && i < keyVector.size(); i++)
     {
-        int diff = (26 + (keyVector[i][0] - 'a') - (codeVector[i][0] - 'a')) % 26;
+        int diff = FindCode(root, keyVector[i], -1);
 
         int last = 0;
         if (codeToKeyVector.size() > 0)
