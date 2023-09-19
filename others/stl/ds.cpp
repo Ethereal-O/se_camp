@@ -99,21 +99,74 @@ void testMap()
 
     // Insertion // {1 1} {2 2} {3 3} {4 4} {10 10} {11 11}
     m.emplace(10, 10);
-    m.emplace(11, 11);
+    m.emplace_hint(m.end(), 11, 11); // insert at the position of the hint // {1 1} {3 3} {4 4} {10 10} {11 11}
 
     // Deletion // {3 3} {4 4} {10 10} {11 11}
     m.erase(1);
     m.erase(m.begin()); // will erase the smallest key
 
     // Find // 5
-    *m.find(5);
+    *m.find(4);
+    *m.lower_bound(3); // 3
+    *m.upper_bound(3); // 4
 
     // Count // 1
-    m.count(5);
+    m.count(4);
 
     // Min/Max // 2 10
     *m.begin();
     *m.rbegin();
+
+    // Compare function
+    m.key_comp()(1, 2);                                         // return the comparison function // true
+    m.value_comp()(std::make_pair(1, 2), std::make_pair(2, 1)); // true
+
+    // Pair of iterators
+    m.equal_range(3); // this function is equivalent to std::make_pair(c.lower_bound(val), c.upper_bound(val)) (but is faster than making the calls separately).// {3 3} {4 4}
+}
+
+void testUnorderedMap()
+{
+    std::unordered_map<int, int> m = {{2, 2}, {1, 1}, {3, 3}, {4, 4}};
+
+    // Insertion // {11 11}
+    m.emplace(10, 10);
+    m.emplace_hint(m.end(), 11, 11); // insert at the position of the hint // {1 1} {3 3} {4 4} {10 10} {11 11}
+
+    // Deletion // {10 10} {2 2} {3 3} {4 4}
+    m.erase(1);
+    m.erase(m.begin()); // will erase the first key
+
+    // Find // 4
+    *m.find(4);
+
+    // Count // 1
+    m.count(4);
+
+    // Min/Max // 2 10
+    *m.begin();
+
+    // Hash function
+    m.hash_function()(1); // return the hash function // 1
+
+    // Pair of iterators
+    m.equal_range(3); // this function is equivalent to std::make_pair(c.lower_bound(val), c.upper_bound(val)) (but is faster than making the calls separately).// {3 3} {4 4}
+
+    // Buckets
+    m.load_factor();     // return the average number of elements per bucket // 0.5
+    m.max_load_factor(); // return the maximum load factor // 1
+}
+
+void testStack()
+{
+    std::stack<int> s;
+    s.push(1);
+    s.push(2);
+    s.push(3);
+    s.pop();   // 2
+    s.top();   // 2
+    s.empty(); // false
+    s.size();  // 2
 }
 
 int main()
@@ -121,4 +174,6 @@ int main()
     // testVector();
     // testSet();
     // testMap();
+    // testUnorderedMap();
+    // testStack();
 }
