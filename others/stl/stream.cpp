@@ -75,6 +75,13 @@ std::string getFirstLine(const std::string &s)
     return line;
 }
 
+std::string getFirstLine()
+{
+    std::string line;
+    std::getline(std::cin, line);
+    return line;
+}
+
 std::string intToString(int num)
 {
     std::stringstream ss;
