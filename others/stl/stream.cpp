@@ -103,6 +103,13 @@ int main()
     // std::cout << readFile1("./stl/stream.cpp") << std::endl;
     // std::cout << readFile2("./stl/stream.cpp") << std::endl; // this method must make sure the file is stored in LF format
 
+    // // read from cin and getline
+    // int intValue;
+    // std::string strValue;
+    // std::cin >> intValue;
+    // std::cin.ignore(); // ignore the '\n' in the buffer
+    // std::getline(std::cin, strValue);
+
     // // write file
     // writeFile("./stl/test.txt", "hello world");
 
