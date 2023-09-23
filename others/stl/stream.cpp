@@ -10,6 +10,20 @@ std::string readFile1(const std::string &filename)
 
 std::string readFile2(const std::string &filename)
 {
+    std::ifstream ifs(filename);
+    if (ifs.fail())
+        return "";
+
+    std::string content;
+    std::ostringstream stream;
+    stream << ifs.rdbuf();
+    content = stream.str();
+    ifs.close();
+    return content;
+}
+
+std::string readFile3(const std::string &filename)
+{
     std::ifstream file(filename.data(), std::ios::in);
     if (!file.is_open())
         return "";
@@ -28,6 +42,24 @@ void writeFile(const std::string &filename, const std::string &content)
     std::ofstream ofs(filename);
     ofs << content;
     ofs.close();
+}
+
+template <typename T>
+bool readSingle(std::istream &is, T &value)
+{
+    if (is.eof())
+        return false;
+    is.read(reinterpret_cast<char *>(&value), sizeof(T));
+    return true;
+}
+
+template <typename T>
+bool writeSingle(std::ostream &os, const T &value)
+{
+    if (os.eof())
+        return false;
+    os.write(reinterpret_cast<const char *>(&value), sizeof(T));
+    return true;
 }
 
 std::vector<std::string> split1(const std::string &s, const std::string &delim)
@@ -101,7 +133,8 @@ int main()
 {
     // // read file
     // std::cout << readFile1("./stl/stream.cpp") << std::endl;
-    // std::cout << readFile2("./stl/stream.cpp") << std::endl; // this method must make sure the file is stored in LF format
+    // std::cout << readFile2("./stl/stream.cpp") << std::endl;
+    // std::cout << readFile3("./stl/stream.cpp") << std::endl; // this method must make sure the file is stored in LF format
 
     // // read from cin and getline
     // int intValue;
@@ -112,6 +145,20 @@ int main()
 
     // // write file
     // writeFile("./stl/test.txt", "hello world");
+
+    // // read and write binary file
+    // std::ifstream ifs("./stl/test.txt", std::ios::binary);
+    // std::ofstream ofs("./stl/test.txt", std::ios::binary);
+    // int num;
+    // readSingle(ifs, num);
+    // writeSingle(ofs, num);
+
+    // // read and write to sstream
+    // std::stringstream ss;
+    // int num = 97;
+    // writeSingle(ss, num);
+    // readSingle(ss, num);
+    // std::cout << ss.tellg() << ss.tellp() << std::endl;
 
     // // split string
     // std::string s = "1,2,3,4,5\nand more 1,2,3,4";
