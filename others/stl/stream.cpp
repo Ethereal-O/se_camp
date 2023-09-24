@@ -1,40 +1,40 @@
 #include "bits/stdc++.h"
 
-std::string readFile1(const std::string &filename)
+bool readFile1(const std::string &filename, std::string &to_str)
 {
     std::ifstream ifs(filename);
-    std::string content((std::istreambuf_iterator<char>(ifs)),
-                        (std::istreambuf_iterator<char>()));
-    return content;
+    if (!ifs.is_open())
+        return false;
+    to_str = std::string((std::istreambuf_iterator<char>(ifs)),
+                         (std::istreambuf_iterator<char>()));
+    return true;
 }
 
-std::string readFile2(const std::string &filename)
+bool readFile2(const std::string &filename, std::string &to_str)
 {
     std::ifstream ifs(filename);
     if (ifs.fail())
-        return "";
+        return false;
 
-    std::string content;
     std::ostringstream stream;
     stream << ifs.rdbuf();
-    content = stream.str();
+    to_str = stream.str();
     ifs.close();
-    return content;
+    return true;
 }
 
-std::string readFile3(const std::string &filename)
+bool readFile3(const std::string &filename, std::string &to_str)
 {
     std::ifstream file(filename.data(), std::ios::in);
     if (!file.is_open())
-        return "";
+        return false;
 
-    std::string content;
     file.seekg(0, std::ios::end);
-    content.resize(file.tellg());
+    to_str.resize(file.tellg());
     file.seekg(0, std::ios::beg);
-    file.read(&content[0], content.size());
+    file.read(&to_str[0], to_str.size());
     file.close();
-    return content;
+    return true;
 }
 
 void writeFile(const std::string &filename, const std::string &content)
@@ -132,9 +132,11 @@ int stringToInt(const std::string &s)
 int main()
 {
     // // read file
-    // std::cout << readFile1("./stl/stream.cpp") << std::endl;
-    // std::cout << readFile2("./stl/stream.cpp") << std::endl;
-    // std::cout << readFile3("./stl/stream.cpp") << std::endl; // this method must make sure the file is stored in LF format
+    // std::string content;
+    // readFile1("./stl/stream.cpp", content);
+    // readFile2("./stl/stream.cpp", content);
+    // readFile3("./stl/stream.cpp", content); // this method must make sure the file is stored in LF format
+    // std::cout << content << std::endl;
 
     // // read from cin and getline
     // int intValue;
